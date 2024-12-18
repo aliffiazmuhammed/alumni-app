@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-login-page/base": "^1.0.4",
+    "axios": "^1.7.9",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.7",
     "react-dom": "^18.3.1",

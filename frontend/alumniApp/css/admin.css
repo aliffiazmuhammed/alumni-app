@@ -1,19 +1,21 @@
 .admin-dashboard {
-    padding: 20px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
 }
+
 
 .management-section {
     display: flex;
-    justify-content: space-around;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
 }
 
-.user-management,
-.event-management,
-.report-generation {
-    width: 30%;
-}
+
 
 h1,
 h2 {
     text-align: center;
 }
+

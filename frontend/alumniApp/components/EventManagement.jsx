@@ -1,79 +1,109 @@
 import React, { useState } from 'react';
-import { Form, Button } from 'react-bootstrap';
+import axios from 'axios'; // Axios for API requests
+import '../css/eventmanagement.css'
+const EventManagement = () => {
+  // State to manage form data
+  const [eventName, setEventName] = useState('');
+  const [eventDate, setEventDate] = useState('');
+  const [eventTime, setEventTime] = useState('');
+  const [eventLocation, setEventLocation] = useState('');
 
-function EventManagement() {
-  const [eventDetails, setEventDetails] = useState({
-    date: '',
-    time: '',
-    location: '',
-    morningSession: '',
-    eveningSession: ''
-  });
-
+  // Handle form input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEventDetails({ ...eventDetails, [name]: value });
+    switch (name) {
+      case 'eventName':
+        setEventName(value);
+        break;
+      case 'eventDate':
+        setEventDate(value);
+        break;
+      case 'eventTime':
+        setEventTime(value);
+        break;
+      case 'eventLocation':
+        setEventLocation(value);
+        break;
+      default:
+        break;
+    }
   };
 
-  const handleSubmit = (e) => {
+  // Function to handle form submission and send email request to backend
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(eventDetails);
-    // Here, you can save the event details to your backend.
+
+    // Prepare event details to be sent
+    const eventDetails = {
+      eventName,
+      eventDate,
+      eventTime,
+      eventLocation,
+    };
+
+    try {
+      // Send a POST request to the backend API to trigger the bulk email sending
+      const response = await axios.post('/api/sendEmails', { eventDetails });
+
+      // Handle success
+      console.log('Emails sent successfully', response.data);
+      alert('Emails sent successfully');
+    } catch (error) {
+      // Handle error
+      console.error('Error sending emails:', error);
+      alert('Error occurred while sending emails');
+    }
   };
 
   return (
     <div className="event-management">
       <h2>Event Management</h2>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="date">
-          <Form.Label>Event Date</Form.Label>
-          <Form.Control
+      <form onSubmit={handleSubmit} className="event-form">
+        <div className="form-group">
+          <label>Event Name:</label>
+          <input
+            type="text"
+            name="eventName"
+            value={eventName}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Event Date:</label>
+          <input
             type="date"
-            name="date"
-            value={eventDetails.date}
+            name="eventDate"
+            value={eventDate}
             onChange={handleInputChange}
+            required
           />
-        </Form.Group>
-        <Form.Group controlId="time">
-          <Form.Label>Event Time</Form.Label>
-          <Form.Control
+        </div>
+        <div className="form-group">
+          <label>Event Time:</label>
+          <input
             type="time"
-            name="time"
-            value={eventDetails.time}
+            name="eventTime"
+            value={eventTime}
             onChange={handleInputChange}
+            required
           />
-        </Form.Group>
-        <Form.Group controlId="location">
-          <Form.Label>Event Location</Form.Label>
-          <Form.Control
+        </div>
+        <div className="form-group">
+          <label>Event Location:</label>
+          <input
             type="text"
-            name="location"
-            value={eventDetails.location}
+            name="eventLocation"
+            value={eventLocation}
             onChange={handleInputChange}
+            required
           />
-        </Form.Group>
-        <Form.Group controlId="morningSession">
-          <Form.Label>Morning Session</Form.Label>
-          <Form.Control
-            type="text"
-            name="morningSession"
-            value={eventDetails.morningSession}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
-        <Form.Group controlId="eveningSession">
-          <Form.Label>Evening Session</Form.Label>
-          <Form.Control
-            type="text"
-            name="eveningSession"
-            value={eventDetails.eveningSession}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
-        <Button type="submit" variant="primary">Save Event Details</Button>
-      </Form>
+        </div>
+
+        <button type="submit">Send Emails</button>
+      </form>
     </div>
   );
-}
+};
 
 export default EventManagement;
