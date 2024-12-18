@@ -1,7 +1,7 @@
 import {BrowserRouter,Route,Routes} from'react-router-dom'
 import Admin from '../pages/Admin'
 import Adminlogin from '../pages/Adminlogin'
-
+import Userlogin from '../pages/Userlogin'
 
 function App() {
 
@@ -11,6 +11,7 @@ function App() {
       <Routes>
         <Route path ='/admin' element = {< Admin />} />
         <Route path ='/adminlogin' element = {< Adminlogin />} />
+        <Route path ='/userlogin' element = {< Userlogin />} />
       </Routes>
     </BrowserRouter>
   )
