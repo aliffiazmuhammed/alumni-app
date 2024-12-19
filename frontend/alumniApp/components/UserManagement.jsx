@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import '../css/userManagement.css';
 
+import { excelUpload } from '../utils/APIRoutes';
+
 function UserManagement() {
   const [searchType, setSearchType] = useState('name');
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,7 +33,7 @@ function UserManagement() {
     formData.append('file', excelFile);
 
     // Send file to backend
-    const response = await fetch('/api/uploadExcel', {
+    const response = await fetch(excelUpload, {
       method: 'POST',
       body: formData,
     });
