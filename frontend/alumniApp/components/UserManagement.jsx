@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../css/userManagement.css';
 
-import { excelUpload } from '../utils/APIRoutes';
+import { excelUpload,searchattendee,editattendee,deleteattendee } from '../utils/APIRoutes';
 
 function UserManagement() {
   const [searchType, setSearchType] = useState('name');
@@ -14,7 +14,7 @@ function UserManagement() {
   const handleSearch = async (e) => {
     e.preventDefault();
     // Send search request to the backend
-    const response = await fetch(`/api/searchAttendee?type=${searchType}&query=${searchQuery}`);
+    const response = await fetch(`${searchattendee}/?type=${searchType}&query=${searchQuery}`);
     const data = await response.json();
     setSearchResult(data); // Update state with the search result
   };
@@ -47,7 +47,7 @@ function UserManagement() {
 
   const handleDelete = async (attendeeId) => {
     // Send delete request to the backend
-    const response = await fetch(`/api/deleteAttendee/${attendeeId}`, {
+    const response = await fetch(`${deleteattendee}/${attendeeId}`, {
       method: 'DELETE',
     });
 
@@ -67,7 +67,7 @@ function UserManagement() {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     // Send updated details to the backend
-    const response = await fetch(`/api/editAttendee/${editAttendee._id}`, {
+    const response = await fetch(`${editattendee}/${editAttendee._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -165,6 +165,24 @@ function UserManagement() {
               onChange={handleEditChange}
             />
           </div>
+          <div className="form-group">
+            <label>Guest Count:</label>
+            <input
+              type="number"
+              name="guestCount"
+              value={editAttendee.guestCount}
+              onChange={handleEditChange}
+            />
+          </div>
+          <div className="form-group">
+            <label>Payment Status:</label>
+            <input
+              type="text"
+              name="paymentStatus"
+              value={editAttendee.paymentStatus}
+              onChange={handleEditChange}
+            />
+          </div>
           <button type="submit">Update</button>
         </form>
       )}
@@ -179,6 +197,8 @@ function UserManagement() {
                   <th>Name</th>
                   <th>Phone</th>
                   <th>Email</th>
+                  <th>Guest Count</th>
+                  <th>Payment Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -188,6 +208,8 @@ function UserManagement() {
                     <td>{attendee.name}</td>
                     <td>{attendee.phone}</td>
                     <td>{attendee.email}</td>
+                    <td>{attendee.guestCount}</td>
+                    <td>{attendee.paymentStatus}</td>
                     <td>
                       <button className="edit-button" onClick={() => handleEdit(attendee)}>Edit</button>
                       <button className="delete-button" onClick={() => handleDelete(attendee._id)}>Delete</button>

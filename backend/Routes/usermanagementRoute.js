@@ -68,6 +68,50 @@ router.post('/uploadExcel', upload.single('file'), async (req, res) => {
         res.status(500).send('Failed to process Excel file');
     }
 });
+router.get('/searchAttendee', async (req, res) => {
+    const { type, query } = req.query;
+
+    let searchCriteria = {};
+    if (type === 'name') {
+        searchCriteria.name = { $regex: query, $options: 'i' };
+    } else if (type === 'phone') {
+        searchCriteria.phone = query;
+    } else if (type === 'email') {
+        searchCriteria.email = { $regex: query, $options: 'i' };
+    }
+
+    try {
+        const attendees = await Attendee.find(searchCriteria);
+        res.status(200).json(attendees);
+    } catch (err) {
+        res.status(500).send('Error occurred while searching for attendee');
+    }
+});
+router.put('/editAttendee/:id', async (req, res) => {
+    const { id } = req.params;
+    const { name, phone, email, guestCount, paymentStatus } = req.body;
+
+    try {
+        const updatedAttendee = await Attendee.findByIdAndUpdate(
+            id,
+            { name, phone, email, guestCount, paymentStatus },
+            { new: true }
+        );
+        res.status(200).json(updatedAttendee);
+    } catch (err) {
+        res.status(500).send('Error occurred while updating attendee');
+    }
+});
+router.delete('/deleteAttendee/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await Attendee.findByIdAndDelete(id);
+        res.status(200).send('Attendee deleted successfully');
+    } catch (err) {
+        res.status(500).send('Error occurred while deleting attendee');
+    }
+});
 
 
 module.exports = router;
