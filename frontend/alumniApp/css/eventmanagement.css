@@ -1,88 +1,91 @@
 /* Container for Event Management */
 .event-management {
-  padding: 30px;
-  max-width: 800px; /* Increase width */
-  width: 100%;
-  margin: 0 auto;
-  background-color: #f4f4f9;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    background-color: #ffffff;
+    /* White background */
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    /* Softer shadow */
+    border-left: 5px solid #3498db;
 }
 
 /* Form Style */
 .event-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* Grouped Input Styles */
-.form-group {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .form-group label {
-  font-size: 16px;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #333;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #2c3e50;
 }
 
 .form-group input {
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #dcdfe6;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    border-color: #3498db;
+    outline: none;
 }
 
 /* Submit Button */
 button {
-  padding: 14px;
-  font-size: 16px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+    padding: 12px;
+    font-size: 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
 }
 
 button:hover {
-  background-color: #45a049;
+    background-color: #2980b9;
 }
 
-/* Responsive Styles for Smaller Screens */
+/* Responsive Styles */
 @media (max-width: 768px) {
-  .event-management {
-    width: 90%; /* Make form take up more width on smaller screens */
-  }
+    .event-management {
+        width: 95%;
+        /* Increase width for tablets */
+    }
 
-  .event-form {
-    gap: 15px;
-  }
+    .form-group input {
+        font-size: 14px;
+    }
 
-  .form-group input {
-    font-size: 14px;
-  }
-
-  button {
-    font-size: 14px;
-  }
+    button {
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 480px) {
-  .event-management {
-    width: 95%; /* Increase the width on very small screens */
-  }
+    .event-management {
+        padding: 20px;
+    }
 
-  .form-group input {
-    font-size: 12px;
-  }
+    .form-group input {
+        font-size: 13px;
+    }
 
-  button {
-    font-size: 12px;
-  }
+    button {
+        font-size: 13px;
+        padding: 10px;
+    }
 }

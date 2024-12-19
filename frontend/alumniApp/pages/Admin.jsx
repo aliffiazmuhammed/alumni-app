@@ -14,7 +14,7 @@ function Admin() {
       <div className="management-section">
         <UserManagement />
         <EventManagement />
-        <ReportGeneration />
+
       </div>
     </div>
   );
