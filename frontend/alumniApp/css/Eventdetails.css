@@ -1,0 +1,135 @@
+/* event-details.css */
+.event-details {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #1e88e5;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.file-upload {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.file-upload input {
+    margin-right: 10px;
+    padding: 10px;
+}
+
+.file-upload button {
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.file-upload button:hover {
+    background-color: #45a049;
+}
+
+.search-form {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.search-dropdown {
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+.search-input {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+.search-button {
+    padding: 10px 20px;
+    background-color: #1e88e5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #1565c0;
+}
+
+.result-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+.result-table th,
+.result-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.result-table th {
+    background-color: #f1f1f1;
+}
+
+.edit-button,
+.delete-button {
+    padding: 5px 10px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.edit-button {
+    background-color: #1e88e5;
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #1565c0;
+}
+
+.delete-button {
+    background-color: #e53935;
+    color: white;
+}
+
+.delete-button:hover {
+    background-color: #b71c1c;
+}
+
+.no-result-message {
+    color: #888;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .event-details {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .file-upload button,
+    .search-button {
+        width: 100%;
+    }
+
+    .result-table th,
+    .result-table td {
+        font-size: 12px;
+    }
+}

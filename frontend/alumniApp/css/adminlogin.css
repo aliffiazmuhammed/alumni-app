@@ -1,123 +1,109 @@
-/* Global styles for body */
-
-
-/* Container for login box */
-.login-container {
+/* General Styles */
+.admin-login {
+    font-family: "Arial", sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
-    padding: 10px;
 }
 
-/* Login box styling */
-.login {
-    background-color: #ffffff;
+/* Heading */
+.admin-login h2 {
+    text-align: center;
+    color: #1e88e5;
+    margin-top: 0;
+    font-size: 28px;
+}
+
+/* Container */
+.admin-login-container {
+    max-width: 400px;
+    background: #ffffff;
     border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     padding: 30px;
     width: 100%;
-    max-width: 420px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    border: 1px solid #eee;
 }
 
-/* Heading for the login form */
-.login h2 {
-    text-align: center;
-    font-size: 28px;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-/* Form styling */
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
 }
 
-/* Form groups (labels and inputs) */
 .form-group {
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 15px;
 }
 
-/* Label styling */
-.form-group label {
+label {
     font-size: 14px;
     font-weight: bold;
     color: #333;
     margin-bottom: 5px;
+    display: block;
 }
 
-/* Input field styling */
-.form-input {
-    padding: 12px;
-    font-size: 16px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+input {
     width: 100%;
-    background-color: #f9f9f9;
-    transition: border 0.3s ease;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    font-size: 14px;
 }
 
-.form-input:focus {
-    border-color: #4e73df;
+input:focus {
+    border-color: #4caf50;
     outline: none;
+    box-shadow: 0px 0px 4px rgba(76, 175, 80, 0.3);
 }
 
-/* Submit button styling */
-.submit-btn {
-    background-color: #4e73df;
+/* Buttons */
+.login-button {
+    background-color: #4caf50;
     color: white;
-    padding: 12px;
-    font-size: 16px;
     border: none;
+    padding: 10px;
+    font-size: 16px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
-    width: 100%;
 }
 
-.submit-btn:hover {
-    background-color: #375a8c;
+.login-button:hover {
+    background-color: #45a049;
 }
 
-/* Responsive adjustments */
+.login-button:disabled {
+    background-color: #a5d6a7;
+    cursor: not-allowed;
+}
+
+/* Message */
+.login-message {
+    margin-top: 10px;
+    font-size: 14px;
+    text-align: center;
+    color: #e53935;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-    .login {
-        width: 80%;
-        padding: 25px;
-    }
-
-    .login h2 {
-        font-size: 24px;
-    }
-
-    .form-input {
-        font-size: 14px;
-    }
-
-    .submit-btn {
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 480px) {
-    .login {
-        width: 90%;
+    .admin-login-container {
+        margin: 20px;
         padding: 20px;
     }
 
-    .login h2 {
-        font-size: 20px;
+    .admin-login h2 {
+        font-size: 24px;
     }
 
-    .form-input {
-        font-size: 12px;
+    input {
+        font-size: 14px;
     }
 
-    .submit-btn {
-        font-size: 12px;
+    .login-button {
+        font-size: 14px;
+        padding: 8px;
     }
 }

@@ -1,0 +1,109 @@
+.dashboard-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    color: #1e88e5;
+}
+
+.event-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.event-form input,
+.event-form textarea,
+.event-form button {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.event-form button {
+    background-color: #4caf50;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.event-form button:hover {
+    background-color: #45a049;
+}
+
+.events-list {
+    margin-top: 20px;
+}
+
+.event-card {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.event-card h4 {
+    color: #333;
+}
+
+.event-card p {
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.event-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.event-actions button {
+    padding: 5px 10px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.event-actions button:first-child {
+    background-color: #1e88e5;
+    color: white;
+}
+
+.event-actions button:first-child:hover {
+    background-color: #1565c0;
+}
+
+.event-actions button:last-child {
+    background-color: #e53935;
+    color: white;
+}
+
+.event-actions button:last-child:hover {
+    background-color: #b71c1c;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-container {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .event-card {
+        padding: 10px;
+    }
+
+    .event-actions button {
+        font-size: 12px;
+        padding: 5px;
+    }
+}
