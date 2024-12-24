@@ -230,7 +230,7 @@ exports.sendReminderEmails = async (req, res) => {
         }
 
         // Fetch attendees who have not registered yet
-        const attendees = await Attendee.find({ eventId, paymentStatus: 'Unpaid' });
+        const attendees = await Attendee.find({ eventId });
 
         if (attendees.length === 0) {
             return res.status(200).json({ message: 'No attendees to send reminders to.' });
