@@ -6,7 +6,7 @@ const fs = require('fs');
 // Controller for uploading Excel file
 exports.uploadExcel = async (req, res) => {
     const { eventId } = req.body; // Expect eventId in the request body
-
+    console.log(eventId)
     if (!eventId) {
         return res.status(400).send('Event ID is required');
     }
@@ -33,9 +33,6 @@ exports.uploadExcel = async (req, res) => {
 
         console.log('Normalized data:', data);
 
-        // Extract unique fields from Excel data
-        const excelSet = new Set(data.map((attendee) => `${attendee.name}_${attendee.phone}_${attendee.email}`));
-
         // Fetch all existing attendees for the given event
         const existingAttendees = await Attendee.find({
             eventId: eventId, // Filter by eventId
@@ -46,14 +43,17 @@ exports.uploadExcel = async (req, res) => {
             })),
         });
 
-        // Create a set of existing attendee identifiers (name + phone + email)
+        // Create a set of existing attendee identifiers (name + phone + email + eventId)
         const existingSet = new Set(
-            existingAttendees.map((attendee) => `${attendee.name}_${attendee.phone}_${attendee.email}`)
+            existingAttendees.map((attendee) =>
+                `${attendee.name}_${attendee.phone}_${attendee.email}_${attendee.eventId}`
+            )
         );
 
-        // Filter out duplicate records
+        // Filter out duplicate records by adding eventId in the identifier
         const newAttendees = data.filter(
-            (attendee) => !existingSet.has(`${attendee.name}_${attendee.phone}_${attendee.email}`)
+            (attendee) =>
+                !existingSet.has(`${attendee.name}_${attendee.phone}_${attendee.email}_${attendee.eventId}`)
         );
 
         // Insert non-redundant attendees into the database

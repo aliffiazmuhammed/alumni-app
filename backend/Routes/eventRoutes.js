@@ -22,6 +22,6 @@ router.put("/update", updateEvent);
 router.delete("/delete", deleteEvent);
 
 // Fetch a single event by ID
-router.post("/get", getEventById);
+router.get("/get/:eventId", getEventById);
 
 module.exports = router;

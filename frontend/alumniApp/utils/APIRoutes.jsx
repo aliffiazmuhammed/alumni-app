@@ -19,3 +19,20 @@ export const uploadexcelRoute = `${host}/api/attendees/uploadExcel`;
 export const searchattendeeRoute = `${host}/api/attendees/search`;
 export const editattendeeRoute = `${host}/api/attendees/edit`;
 export const deleteattendeeRoute = `${host}/api/attendees/delete`;
+
+
+//userloginroutes
+export const sentotpRoute = `${host}/api/userlogin/send-otp`;
+
+//userpageroutes
+export const userpageRoute = `${host}/api/userevents`;
+
+
+//usereventroutes
+
+export const userupdateguestRoute = `${host}/api/user/events/updateGuestCount`;
+export const usereventregisterRoute = `${host}/api/user/events/register`;
+export const usereventcheckinRoute = `${host}/api/user/events/checkin`;
+export const usereventRoute = `${host}/api/user/events/usereve`;
+export const usereventregistrationstatusRoute = `${host}/api/user/events/registrationStatus`;
+export const fetchUserDetailsRoute = `${host}/api/user/events/fetchuserdetails`;

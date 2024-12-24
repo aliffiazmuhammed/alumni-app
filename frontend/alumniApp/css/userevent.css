@@ -1,0 +1,163 @@
+/* Container styling for the user-event-page */
+.user-event-page {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-event-page h2 {
+    text-align: center;
+    color: #333;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.user-event-page p {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.user-event-page hr {
+    margin: 20px 0;
+    border: none;
+    border-top: 1px solid #ddd;
+}
+
+/* Form styling within user-event-page */
+.user-event-page .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.user-event-page .form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #444;
+    font-size: 1rem;
+}
+
+.user-event-page .form-group input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.user-event-page .form-group input:focus {
+    border-color: #007bff;
+    /* Highlight input border */
+    background-color: #f1f9ff;
+    /* Slight blue background */
+    outline: none;
+}
+
+.user-event-page .form-group input:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.6;
+    /* Dim disabled elements */
+}
+
+/* Button styling within user-event-page */
+.user-event-page .edit-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.user-event-page .save-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.user-event-page .form-group button,
+.user-event-page .actions button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.user-event-page .form-group button:hover,
+.user-event-page .actions button:hover {
+    opacity: 0.9;
+}
+
+button:disabled,
+input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.user-event-page .actions {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.user-event-page .actions button {
+    margin: 5px;
+}
+
+/* Message styling */
+.user-event-page .message {
+    margin-top: 20px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.message.error {
+    color: red;
+}
+
+.message.success {
+    color: green;
+}
+
+/* Responsive design for user-event-page */
+@media (max-width: 768px) {
+    .user-event-page {
+        padding: 15px;
+    }
+
+    .user-event-page h2 {
+        font-size: 1.5rem;
+    }
+
+    .user-event-page .form-group input {
+        font-size: 0.9rem;
+    }
+
+    .user-event-page .form-group button,
+    .user-event-page .actions button {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .user-event-page {
+        padding: 10px;
+    }
+
+    .user-event-page h2 {
+        font-size: 1.2rem;
+    }
+
+    .user-event-page .form-group input {
+        font-size: 0.8rem;
+    }
+
+    .user-event-page .form-group button,
+    .user-event-page .actions button {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+    }
+}

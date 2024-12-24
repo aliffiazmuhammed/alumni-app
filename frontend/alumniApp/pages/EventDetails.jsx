@@ -6,7 +6,8 @@ import {
   uploadexcelRoute,
   searchattendeeRoute,
   deleteattendeeRoute,
-  editattendeeRoute
+  editattendeeRoute,
+  getsingleeventRoute
 } from "../utils/APIRoutes";
 
 function EventDetails() {
@@ -22,7 +23,7 @@ function EventDetails() {
   // Fetch event details on page load
   useEffect(() => {
     const fetchEventDetails = async () => {
-      const response = await fetch(`/api/events/${eventId}`);
+      const response = await fetch(`${getsingleeventRoute}/${eventId}`);
       const data = await response.json();
       setEventDetails(data);
     };
@@ -60,6 +61,7 @@ function EventDetails() {
 
    if (response.ok) {
      alert("File uploaded successfully!");
+     setExcelFile(null)
    } else {
      alert("Failed to upload file.");
    }

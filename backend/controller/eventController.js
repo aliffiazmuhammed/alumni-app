@@ -87,16 +87,18 @@ module.exports.deleteEvent = async (req, res) => {
 };
 
 module.exports.getEventById = async (req, res) => {
-    const { eventId } = req.body;
-
+    const { eventId } = req.params;
+    console.log(eventId)
     if (!eventId) {
         return res.status(400).json({ message: "Event ID are required." });
     }
 
     try {
+        console.log("event")
         const event = await Event.findOne({ _id: eventId});
 
         if (!event) {
+            console.log("event not found")
             return res.status(404).json({ message: "Event not found or unauthorized." });
         }
 

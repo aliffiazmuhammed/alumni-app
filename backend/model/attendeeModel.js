@@ -27,7 +27,8 @@ const attendeeSchema = new mongoose.Schema({
     eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event', required: true }, // Reference to the Event model
 }, { timestamps: true });
 
+attendeeSchema.index({ name: 1, phone: 1, email: 1, eventId: 1 }, { unique: true });
+
 const Attendee = mongoose.model('Attendee', attendeeSchema);
 
 module.exports = Attendee;
-
