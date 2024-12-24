@@ -19,6 +19,8 @@ export const uploadexcelRoute = `${host}/api/attendees/uploadExcel`;
 export const searchattendeeRoute = `${host}/api/attendees/search`;
 export const editattendeeRoute = `${host}/api/attendees/edit`;
 export const deleteattendeeRoute = `${host}/api/attendees/delete`;
+export const generatereportRoute = `${host}/api/attendees/generatereport`;
+export const sendremaindermailsRoute = `${host}/api/attendees/sendremaindermails`
 
 
 //userloginroutes

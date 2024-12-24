@@ -1,6 +1,7 @@
 const Attendee = require("../model/attendeeModel");
 const Registered = require("../model/registerModel");
 const Event = require("../model/eventModel");
+const sendRegistrationEmail = require('../utils/mailer')
 // Update guest count for an attendee
 exports.updateGuestCount = async (req, res) => {
     try {
@@ -30,15 +31,10 @@ exports.updateGuestCount = async (req, res) => {
 exports.registerUser = async (req, res) => {
     try {
         const { eventId } = req.params;
-        const { name, email, phone, guestCount } = req.body;
+        const { name, email, phone, eventname,eventlocation,eventdate } = req.body;
 
         // Check if the user already exists
         let attendee = await Attendee.findOne({ email });
-        if (!attendee) {
-            // Create a new attendee if not found
-            attendee = new Attendee({ name, email, phone, guestCount });
-            await attendee.save();
-        }
 
         // Check if the user is already registered for the event
         const existingRegistration = await Registered.findOne({
@@ -55,7 +51,7 @@ exports.registerUser = async (req, res) => {
             eventId,
         });
         await registration.save();
-
+        await sendRegistrationEmail(email, name, eventname,eventlocation,eventdate);
         res.status(200).json({ message: "User registered successfully" });
     } catch (error) {
         console.error("Error during registration:", error);

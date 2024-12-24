@@ -7,8 +7,11 @@ import {
   searchattendeeRoute,
   deleteattendeeRoute,
   editattendeeRoute,
-  getsingleeventRoute
+  getsingleeventRoute,
+  generatereportRoute,
+  sendremaindermailsRoute,
 } from "../utils/APIRoutes";
+
 
 function EventDetails() {
   const { eventId } = useParams();
@@ -111,6 +114,57 @@ function EventDetails() {
     }
   };
 
+const generateReport = async () => {
+  try {
+    const response = await fetch(
+      `${generatereportRoute}/${eventId}`, // Replace with your backend route
+      {
+        method: "GET",
+      }
+    );
+
+    if (response.ok) {
+      // Create a blob for the file
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      // Create a temporary anchor element to trigger download
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${eventDetails.name}_Report.xlsx`; // File name
+      a.click();
+
+      // Revoke the object URL to free memory
+      window.URL.revokeObjectURL(url);
+    } else {
+      alert("Failed to generate report");
+    }
+  } catch (error) {
+    console.error("Error generating report:", error);
+    alert("An error occurred while generating the report.");
+  }
+};
+
+  const generateremaindermail = async()=>{
+    try {
+        const response = await fetch(sendremaindermailsRoute, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ eventId }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert(result.message);
+        } else {
+            alert(`Error: ${result.message}`);
+        }
+    } catch (error) {
+        console.error('Error sending reminder emails:', error);
+        alert('Failed to send reminder emails.');
+    }
+  }
+
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditAttendee({ ...editAttendee, [name]: value });
@@ -145,7 +199,16 @@ function EventDetails() {
         {excelFile && <p>Selected File: {excelFile.name}</p>}
         <button onClick={handleFileSubmit}>Submit File</button>
       </div>
-
+      {/*report generation*/}
+      <div className="report-generation">
+        <button className="generate-report-button" onClick={generateReport}>
+          Generate Report
+        </button>
+      </div>
+      {/*send remainder mails*/}
+      <div className="button-container">
+        <button className="send-reminder-button" onClick={generateremaindermail}>Send Reminder Mail</button>
+      </div>
       {/* Search Section */}
       <form className="search-form" onSubmit={handleSearch}>
         <select

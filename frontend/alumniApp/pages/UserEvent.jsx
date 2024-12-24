@@ -94,6 +94,9 @@ const UserEvent = () => {
           email: userDetails.email, // Email to identify the user
           name: userDetails.name, // User's name
           phone: userDetails.phone, // User's phone
+          eventname: eventDetails.name,
+          eventlocation: eventDetails.location,
+          eventDate: eventDetails.date,
         }
       );
       setMessage(response.data.message);

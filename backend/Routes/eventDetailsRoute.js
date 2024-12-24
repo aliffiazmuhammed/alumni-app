@@ -4,7 +4,7 @@ const router = express.Router();
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() }); // In-memory storage for the uploaded file
 
-const { uploadExcel, searchAttendee, editAttendee, deleteAttendee } = require('../controller/eventDetailController');
+const { uploadExcel, searchAttendee, editAttendee, deleteAttendee, generatereport, sendReminderEmails } = require('../controller/eventDetailController');
 
 // Route for uploading Excel file
 router.post('/uploadExcel', upload.single('file'), uploadExcel);
@@ -18,4 +18,7 @@ router.put('/edit/:attendeeId', editAttendee);
 // Route for deleting an attendee
 router.delete('/delete/:attendeeId', deleteAttendee);
 
+router.get('/generatereport/:eventId', generatereport);
+
+router.post('/sendremaindermails',sendReminderEmails)
 module.exports = router;

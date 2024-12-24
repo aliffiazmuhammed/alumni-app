@@ -112,6 +112,22 @@ h2 {
     background-color: #b71c1c;
 }
 
+.generate-report-button {
+    padding: 10px 20px;
+    background-color: #ffa726;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 20px auto;
+    display: block; /* Centering the button */
+    text-align: center;
+}
+
+.generate-report-button:hover {
+    background-color: #fb8c00;
+}
+
 .no-result-message {
     color: #888;
     text-align: center;
@@ -124,7 +140,8 @@ h2 {
     }
 
     .file-upload button,
-    .search-button {
+    .search-button,
+    .generate-report-button {
         width: 100%;
     }
 

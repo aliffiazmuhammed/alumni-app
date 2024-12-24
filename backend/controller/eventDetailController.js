@@ -2,7 +2,10 @@
 const XLSX = require('xlsx');
 const Attendee = require('../model/attendeeModel');
 const fs = require('fs');
-
+const path = require("path");
+const Registered = require("../model/registerModel");
+const Event = require("../model/eventModel")
+const nodemailer = require('nodemailer');
 // Controller for uploading Excel file
 exports.uploadExcel = async (req, res) => {
     const { eventId } = req.body; // Expect eventId in the request body
@@ -139,5 +142,140 @@ exports.deleteAttendee = async (req, res) => {
     } catch (error) {
         console.error('Error deleting attendee:', error);
         res.status(500).send('Failed to delete attendee');
+    }
+};
+
+//controller for generating report
+exports.generatereport = async (req, res) => {
+    const { eventId } = req.params;
+    try {
+        // Fetch attendees for the event
+        const attendees = await Attendee.find({ eventId }).lean();
+
+        // Fetch registered attendees for the event
+        const registeredAttendees = await Registered.find({ eventId })
+            .populate("userId") // Populate details from the Attendee model
+            .lean();
+
+        // Prepare attendees data for the Excel sheet
+        const attendeesData = attendees.map((attendee) => ({
+            Name: attendee.name,
+            Phone: attendee.phone,
+            Email: attendee.email,
+            GuestCount: attendee.guestCount,
+            PaymentStatus: attendee.paymentStatus,
+            CreatedAt: attendee.createdAt.toLocaleString(),
+        }));
+
+        // Prepare registered attendees data for the Excel sheet
+        const registeredData = registeredAttendees.map((registered) => ({
+            Name: registered.userId.name,
+            Phone: registered.userId.phone,
+            Email: registered.userId.email,
+            CheckInStatus: registered.checkIn ? "Checked In" : "Not Checked In",
+        }));
+
+        // Create Excel sheets
+        const workbook = XLSX.utils.book_new();
+
+        // Add Attendees List sheet
+        const attendeesSheet = XLSX.utils.json_to_sheet(attendeesData);
+        XLSX.utils.book_append_sheet(workbook, attendeesSheet, "Attendees List");
+
+        // Add Registered Attendees List sheet
+        const registeredSheet = XLSX.utils.json_to_sheet(registeredData);
+        XLSX.utils.book_append_sheet(
+            workbook,
+            registeredSheet,
+            "Registered Attendees List"
+        );
+        // Ensure the "reports" directory exists
+        const reportsDir = path.join(__dirname, "../reports");
+        if (!fs.existsSync(reportsDir)) {
+            fs.mkdirSync(reportsDir, { recursive: true }); // Creates the directory recursively
+        }
+
+        // Generate Excel file path
+        const filePath = path.join(
+            __dirname,
+            `../reports/Event_${eventId}_Report.xlsx`
+        );
+        XLSX.writeFile(workbook, filePath);
+
+        // Send the file for download
+        res.download(filePath, (err) => {
+            if (err) {
+                console.error("Error downloading the file:", err);
+            }
+
+            // Delete the file after download
+            fs.unlink(filePath, (err) => {
+                if (err) console.error("Error deleting the file:", err);
+            });
+        });
+    } catch (error) {
+        console.error("Error generating report:", error);
+        res.status(500).json({ message: "Failed to generate report" });
+    }
+}
+
+exports.sendReminderEmails = async (req, res) => {
+    try {
+        const { eventId } = req.body;
+
+        // Fetch event details
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        // Fetch attendees who have not registered yet
+        const attendees = await Attendee.find({ eventId, paymentStatus: 'Unpaid' });
+
+        if (attendees.length === 0) {
+            return res.status(200).json({ message: 'No attendees to send reminders to.' });
+        }
+
+        // Configure the Nodemailer transporter
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587, // Common port for SMTP (can also be 465 for SSL)
+            secure: false,
+            auth: {
+                user: process.env.email, // Your email
+                pass: process.env.googlepas, // Your email password (use environment variables in production)
+            },
+        });
+
+        // Send reminder emails to each attendee
+        const emailPromises = attendees.map((attendee) => {
+            const mailOptions = {
+                from: 'your_email@gmail.com',
+                to: attendee.email,
+                subject: `Reminder: Register for ${event.name}`,
+                html: `
+                    <h3>Hi ${attendee.name},</h3>
+                    <p>You are invited to the event: <strong>${event.name}</strong>.</p>
+                    <p><strong>Event Details:</strong></p>
+                    <ul>
+                        <li><strong>Date:</strong> ${event.date}</li>
+                        <li><strong>Location:</strong> ${event.location}</li>
+                    </ul>
+                    <p>Please register for the event to confirm your participation.</p>
+                    <p><strong>Note:</strong> If you have already registered, kindly ignore this email.</p>
+                    <p>Thank you!</p>
+                `,
+            };
+
+            return transporter.sendMail(mailOptions);
+        });
+
+        // Wait for all emails to be sent
+        await Promise.all(emailPromises);
+
+        res.status(200).json({ message: 'Reminder emails sent successfully!' });
+    } catch (error) {
+        console.error('Error sending reminder emails:', error);
+        res.status(500).json({ message: 'Failed to send reminder emails.', error });
     }
 };

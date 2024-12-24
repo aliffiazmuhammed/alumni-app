@@ -1,4 +1,6 @@
 const Event = require("../model/eventModel");
+const Attendee = require('../model/attendeeModel')
+const Registered = require("../model/registerModel");
 
 // Fetch events for a specific admin
 module.exports.getAllEvents = async (req, res) => {
@@ -74,13 +76,24 @@ module.exports.deleteEvent = async (req, res) => {
     }
 
     try {
+        // Delete the event
         const event = await Event.findOneAndDelete({ _id: eventId, adminId });
 
         if (!event) {
             return res.status(404).json({ message: "Event not found or unauthorized." });
         }
 
-        res.status(200).json({ message: "Event deleted successfully." });
+        // Delete attendees related to the event
+        const attendeesDeletion = await Attendee.deleteMany({ eventId });
+
+        // Delete registered attendees related to the event
+        const registeredDeletion = await Registered.deleteMany({ eventId });
+
+        res.status(200).json({
+            message: "Event and related attendees deleted successfully.",
+            deletedAttendees: attendeesDeletion.deletedCount,
+            deletedRegistered: registeredDeletion.deletedCount,
+        });
     } catch (error) {
         res.status(500).json({ message: "Failed to delete event", error });
     }

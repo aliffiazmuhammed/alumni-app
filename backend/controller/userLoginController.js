@@ -4,7 +4,7 @@ const Attendee = require("../model/attendeeModel");
 const otpStore = {};
 
 // Send OTP
-const sendOtp = async (req, res) => {
+exports.sendOtp = async (req, res) => {
     const { email, phoneNumber } = req.body;
 
     // Validate input
