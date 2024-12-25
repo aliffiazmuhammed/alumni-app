@@ -207,7 +207,12 @@ const generateReport = async () => {
       </div>
       {/*send remainder mails*/}
       <div className="button-container">
-        <button className="send-reminder-button" onClick={generateremaindermail}>Send Reminder Mail</button>
+        <button
+          className="send-reminder-button"
+          onClick={generateremaindermail}
+        >
+          Send Reminder Mail
+        </button>
       </div>
       {/* Search Section */}
       <form className="search-form" onSubmit={handleSearch}>
@@ -217,7 +222,6 @@ const generateReport = async () => {
           onChange={(e) => setSearchType(e.target.value)}
         >
           <option value="name">Name</option>
-          <option value="phone">Phone</option>
           <option value="email">Email</option>
         </select>
         <input
@@ -246,15 +250,6 @@ const generateReport = async () => {
             />
           </div>
           <div className="form-group">
-            <label>Phone:</label>
-            <input
-              type="text"
-              name="phone"
-              value={editAttendee.phone}
-              onChange={handleEditChange}
-            />
-          </div>
-          <div className="form-group">
             <label>Email:</label>
             <input
               type="email"
@@ -264,20 +259,38 @@ const generateReport = async () => {
             />
           </div>
           <div className="form-group">
-            <label>Guest Count:</label>
+            <label>Morning Guest Count</label>
             <input
               type="number"
-              name="guestCount"
-              value={editAttendee.guestCount}
+              name="morningGuestCount"
+              value={editAttendee.morningGuestCount}
               onChange={handleEditChange}
             />
           </div>
           <div className="form-group">
-            <label>Payment Status:</label>
+            <label>Evening Guest Count</label>
+            <input
+              type="number"
+              name="eveningGuestCount"
+              value={editAttendee.eveningGuestCount}
+              onChange={handleEditChange}
+            />
+          </div>
+          <div className="form-group">
+            <label>Payment Amount:</label>
             <input
               type="text"
-              name="paymentStatus"
-              value={editAttendee.paymentStatus}
+              name="paymentAmount"
+              value={editAttendee.paymentAmount}
+              onChange={handleEditChange}
+            />
+          </div>
+          <div className="form-group">
+            <label>Food Choice:</label>
+            <input
+              type="text"
+              name="foodChoice"
+              value={editAttendee.foodChoice}
               onChange={handleEditChange}
             />
           </div>
@@ -293,10 +306,11 @@ const generateReport = async () => {
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Phone</th>
                   <th>Email</th>
-                  <th>Guest Count</th>
-                  <th>Payment Status</th>
+                  <th>Morning Guest Count</th>
+                  <th>Evening Guest Count</th>
+                  <th>Payment Amount</th>
+                  <th>Food Choice</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -304,10 +318,11 @@ const generateReport = async () => {
                 {searchResult.map((attendee, index) => (
                   <tr key={index}>
                     <td>{attendee.name}</td>
-                    <td>{attendee.phone}</td>
                     <td>{attendee.email}</td>
-                    <td>{attendee.guestCount}</td>
-                    <td>{attendee.paymentStatus}</td>
+                    <td>{attendee.morningGuestCount}</td>
+                    <td>{attendee.eveningGuestCount}</td>
+                    <td>{attendee.paymentAmount}</td>
+                    <td>{attendee.foodChoice}</td>
                     <td>
                       <button
                         className="edit-button"

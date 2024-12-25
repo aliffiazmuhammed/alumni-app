@@ -8,8 +8,8 @@ const Event = require("../model/eventModel")
 const nodemailer = require('nodemailer');
 // Controller for uploading Excel file
 exports.uploadExcel = async (req, res) => {
-    const { eventId } = req.body; // Expect eventId in the request body
-    console.log(eventId)
+    const { eventId } = req.body;
+
     if (!eventId) {
         return res.status(400).send('Event ID is required');
     }
@@ -24,39 +24,41 @@ exports.uploadExcel = async (req, res) => {
         const sheetName = workbook.SheetNames[0]; // Get the first sheet
         const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]); // Convert sheet to JSON
 
-        // Normalize keys to match Mongoose schema
+        // Normalize keys to match the schema
         const data = rawData.map((record) => ({
-            name: record.Name,
-            phone: record.Phone,
-            email: record.Email,
-            guestCount: record['Guest Count'] || 0,
-            paymentStatus: record['Payment Status'] || 'Unpaid',
-            eventId: eventId, // Associate with the event
+            name: record.Names || '',// Name field, if present
+            email: record.Attendees || '', // Email is in the 'Attendee' column
+            morningGuestCount: parseInt(record['Morning Guest'] || '0', 10), // Morning guest count
+            eveningGuestCount: parseInt(record['Evening Guest not including self'] || '0', 10), // Evening guest count
+            foodChoice: record['Food choices'] || '', // Food choice
+            paymentAmount: parseFloat(record['Payment Amount'] || '0'), // Payment amount
+            eventId: eventId, // Associate with event
         }));
-
-        console.log('Normalized data:', data);
+        console.log(data)
+        // Filter out invalid records (email is required)
+        const validatedData = data.filter(
+            (attendee) => attendee.email // Ensure email is provided
+        );
 
         // Fetch all existing attendees for the given event
         const existingAttendees = await Attendee.find({
-            eventId: eventId, // Filter by eventId
-            $or: data.map((attendee) => ({
-                name: attendee.name,
-                phone: attendee.phone,
+            eventId: eventId,
+            $or: validatedData.map((attendee) => ({
                 email: attendee.email,
             })),
         });
 
-        // Create a set of existing attendee identifiers (name + phone + email + eventId)
+        // Create a set of existing attendee identifiers (email + eventId)
         const existingSet = new Set(
-            existingAttendees.map((attendee) =>
-                `${attendee.name}_${attendee.phone}_${attendee.email}_${attendee.eventId}`
+            existingAttendees.map(
+                (attendee) => `${attendee.email}_${attendee.eventId}`
             )
         );
 
-        // Filter out duplicate records by adding eventId in the identifier
-        const newAttendees = data.filter(
+        // Filter out duplicates
+        const newAttendees = validatedData.filter(
             (attendee) =>
-                !existingSet.has(`${attendee.name}_${attendee.phone}_${attendee.email}_${attendee.eventId}`)
+                !existingSet.has(`${attendee.email}_${attendee.eventId}`)
         );
 
         // Insert non-redundant attendees into the database
@@ -67,7 +69,7 @@ exports.uploadExcel = async (req, res) => {
         res.status(200).send({
             message: 'Excel data uploaded successfully',
             insertedCount: newAttendees.length,
-            duplicateCount: data.length - newAttendees.length,
+            duplicateCount: validatedData.length - newAttendees.length,
         });
     } catch (error) {
         console.error('Error processing Excel file:', error);
@@ -106,7 +108,7 @@ exports.searchAttendee = async (req, res) => {
 // Controller for editing an attendee
 exports.editAttendee = async (req, res) => {
     const { attendeeId } = req.params;
-    const { name, phone, email, guestCount, paymentStatus } = req.body;
+    const { name, email, morningGuestCount,eveningGuestCount, paymentAmount ,foodChoice} = req.body;
 
     try {
         const attendee = await Attendee.findById(attendeeId);
@@ -115,10 +117,11 @@ exports.editAttendee = async (req, res) => {
         }
 
         attendee.name = name || attendee.name;
-        attendee.phone = phone || attendee.phone;
         attendee.email = email || attendee.email;
-        attendee.guestCount = guestCount || attendee.guestCount;
-        attendee.paymentStatus = paymentStatus || attendee.paymentStatus;
+        attendee.morningGuestCount = morningGuestCount || attendee.morningGuestCount;
+        attendee.eveningGuestCount = eveningGuestCount || attendee.eveningGuestCount;
+        attendee.paymentAmount = paymentAmount || attendee.paymentAmount;
+        attendee.foodChoice = foodChoice || attendee.foodChoice;
 
         await attendee.save();
         res.status(200).send('Attendee updated successfully');
@@ -160,17 +163,17 @@ exports.generatereport = async (req, res) => {
         // Prepare attendees data for the Excel sheet
         const attendeesData = attendees.map((attendee) => ({
             Name: attendee.name,
-            Phone: attendee.phone,
             Email: attendee.email,
-            GuestCount: attendee.guestCount,
-            PaymentStatus: attendee.paymentStatus,
+            MorningGuestCount: attendee.morningGuestCount,
+            EveningGuestCount: attendee.eveningGuestCount,
+            PaymentAmount:attendee.paymentAmount,
+            Foodchoice:attendee.foodChoice,
             CreatedAt: attendee.createdAt.toLocaleString(),
         }));
 
         // Prepare registered attendees data for the Excel sheet
         const registeredData = registeredAttendees.map((registered) => ({
             Name: registered.userId.name,
-            Phone: registered.userId.phone,
             Email: registered.userId.email,
             CheckInStatus: registered.checkIn ? "Checked In" : "Not Checked In",
         }));
@@ -262,6 +265,8 @@ exports.sendReminderEmails = async (req, res) => {
                         <li><strong>Location:</strong> ${event.location}</li>
                     </ul>
                     <p>Please register for the event to confirm your participation.</p>
+                    <p>follow the following link to register:</p>
+                    <p>http://localhost:5173/userlogin</p>
                     <p><strong>Note:</strong> If you have already registered, kindly ignore this email.</p>
                     <p>Thank you!</p>
                 `,

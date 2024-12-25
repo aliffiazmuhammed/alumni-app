@@ -18,21 +18,21 @@ const UserEvent = () => {
   const [userDetails, setUserDetails] = useState({
     _id: "",
     name: "",
-    phone: "",
     email: "",
-    paymentStatus: "Pending", // Default value
-    guestCount: 0,
+    morningGuestCount: 0,
+    eveningGuestCount: 0,
+    paymentAmount: 0, // Default value
+    foodChoice: "",
   });
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState("");
-  const [isEditingGuestCount, setIsEditingGuestCount] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Fetch event details and registration status on load
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
         const eventResponse = await axios.get(`${usereventRoute}/${eventId}`);
-        
         const userEmail =
           userDetails.email || localStorage.getItem("userEmail"); // Get user email from localStorage or state
 
@@ -46,7 +46,6 @@ const UserEvent = () => {
         const userResponse = await axios.get(`${fetchUserDetailsRoute}`, {
           params: { email: userEmail, eventId },
         });
-        console.log(userResponse.data)
 
         setEventDetails(eventResponse.data.event);
         setRegistrationStatus(registrationResponse.data);
@@ -62,29 +61,19 @@ const UserEvent = () => {
     fetchEventDetails();
   }, [eventId, userDetails.email]);
 
-  // Handle guest count update
-  const handleGuestCountUpdate = async () => {
+   // Handle user check-in
+  const handleCheckIn = async () => {
     try {
-      const response = await axios.put(`${userupdateguestRoute}/${eventId}`, {
+      const response = await axios.post(`${usereventcheckinRoute}/${eventId}`, {
         email: userDetails.email, // Email to identify the user
-        guestCount: userDetails.guestCount, // Updated guest count
       });
       setMessage(response.data.message);
-      setIsEditingGuestCount(false); // Exit editing mode
+      setRegistrationStatus({ ...registrationStatus, checkedIn: true });
     } catch (error) {
-      console.error("Error updating guest count:", error);
-      setMessage("Failed to update guest count. Please try again.");
+      console.error("Error during check-in:", error);
+      setMessage("Failed to check in. Please try again.");
     }
   };
-
-  // Handle guest count change
-  const handleGuestCountChange = (e) => {
-    setUserDetails((prevDetails) => ({
-      ...prevDetails,
-      guestCount: e.target.value,
-    }));
-  };
-
   // Handle user registration
   const handleRegister = async () => {
     try {
@@ -93,7 +82,6 @@ const UserEvent = () => {
         {
           email: userDetails.email, // Email to identify the user
           name: userDetails.name, // User's name
-          phone: userDetails.phone, // User's phone
           eventname: eventDetails.name,
           eventlocation: eventDetails.location,
           eventDate: eventDetails.date,
@@ -107,17 +95,20 @@ const UserEvent = () => {
     }
   };
 
-  // Handle user check-in
-  const handleCheckIn = async () => {
+  // Handle guest details update
+  const handleGuestDetailsUpdate = async () => {
     try {
-      const response = await axios.post(`${usereventcheckinRoute}/${eventId}`, {
+      const response = await axios.put(`${userupdateguestRoute}/${eventId}`, {
         email: userDetails.email, // Email to identify the user
+        morningGuestCount: userDetails.morningGuestCount, // Updated morning count
+        eveningGuestCount: userDetails.eveningGuestCount, // Updated evening count
+        foodChoice: userDetails.foodChoice, // Updated food choice
       });
       setMessage(response.data.message);
-      setRegistrationStatus({ ...registrationStatus, checkedIn: true });
+      setIsEditing(false); // Exit editing mode
     } catch (error) {
-      console.error("Error during check-in:", error);
-      setMessage("Failed to check in. Please try again.");
+      console.error("Error updating guest details:", error);
+      setMessage("Failed to update guest details. Please try again.");
     }
   };
 
@@ -151,37 +142,69 @@ const UserEvent = () => {
         <p>
           <strong>Email:</strong> {userDetails.email}
         </p>
-        <p>
-          <strong>Phone:</strong> {userDetails.phone}
-        </p>
-        <p>
-          <strong>Payment Status:</strong> {userDetails.paymentStatus}
-        </p>
-        <p>
-          <strong>Guest Count:</strong>{" "}
-          {!isEditingGuestCount ? (
-            <>
-              {userDetails.guestCount}{" "}
-              <button
-                className="edit-btn"
-                onClick={() => setIsEditingGuestCount(true)}
-              >
-                Edit
-              </button>
-            </>
-          ) : (
-            <>
+        {!isEditing ? (
+          <>
+            <p>
+              <strong>Morning Guest Count:</strong>{" "}
+              {userDetails.morningGuestCount}
+            </p>
+            <p>
+              <strong>Evening Guest Count:</strong>{" "}
+              {userDetails.eveningGuestCount}
+            </p>
+            <p>
+              <strong>Food Choice:</strong> {userDetails.foodChoice}
+            </p>
+            <button className="edit-btn" onClick={() => setIsEditing(true)}>
+              Edit
+            </button>
+          </>
+        ) : (
+          <>
+            <p>
+              <strong>Morning Guest Count:</strong>
               <input
                 type="number"
-                value={userDetails.guestCount}
-                onChange={handleGuestCountChange}
+                value={userDetails.morningGuestCount}
+                onChange={(e) =>
+                  setUserDetails({
+                    ...userDetails,
+                    morningGuestCount: e.target.value,
+                  })
+                }
               />
-              <button className="save-btn" onClick={handleGuestCountUpdate}>
-                Save
-              </button>
-            </>
-          )}
-        </p>
+            </p>
+            <p>
+              <strong>Evening Guest Count:</strong>
+              <input
+                type="number"
+                value={userDetails.eveningGuestCount}
+                onChange={(e) =>
+                  setUserDetails({
+                    ...userDetails,
+                    eveningGuestCount: e.target.value,
+                  })
+                }
+              />
+            </p>
+            <p>
+              <strong>Food Choice:</strong>
+              <select
+                value={userDetails.foodChoice}
+                onChange={(e) =>
+                  setUserDetails({ ...userDetails, foodChoice: e.target.value })
+                }
+              >
+                <option value="Vegetarian">Vegetarian</option>
+                <option value="Non-Vegetarian">Non-Vegetarian</option>
+                <option value="Vegan">Vegan</option>
+              </select>
+            </p>
+            <button className="save-btn" onClick={handleGuestDetailsUpdate}>
+              Save
+            </button>
+          </>
+        )}
       </div>
 
       <div className="actions">

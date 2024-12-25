@@ -5,13 +5,12 @@ const otpStore = {};
 
 // Send OTP
 exports.sendOtp = async (req, res) => {
-    const { email, phoneNumber } = req.body;
+    const { email} = req.body;
 
     // Validate input
-    if (!email || !phoneNumber) {
+    if (!email) {
         return res.status(400).json({ success: false, message: "Email and Phone Number are required!" });
     }
-    console.log(`${email} ${phoneNumber}`)
     try {
         // Check if attendee exists
         const attendee = await Attendee.findOne({ email });

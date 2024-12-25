@@ -5,7 +5,7 @@ const sendRegistrationEmail = require('../utils/mailer')
 // Update guest count for an attendee
 exports.updateGuestCount = async (req, res) => {
     try {
-        const { email, guestCount } = req.body;
+        const { email, morningGuestCount, eveningGuestCount, foodChoice } = req.body;
 
         // Find attendee by email
         const attendee = await Attendee.findOne({ email });
@@ -14,10 +14,12 @@ exports.updateGuestCount = async (req, res) => {
         }
 
         // Update guest count
-        attendee.guestCount = guestCount;
+        attendee.morningGuestCount = morningGuestCount || attendee.morningGuestCount;
+        attendee.eveningGuestCount = eveningGuestCount || attendee.eveningGuestCount;
+        attendee.foodChoice = foodChoice || attendee.foodChoice;
         await attendee.save();
 
-        res.status(200).json({ message: "Guest count updated successfully" });
+        res.status(200).json({ message: "Details updated successfully" });
     } catch (error) {
         console.error("Error updating guest count:", error);
         res.status(500).json({ message: "Failed to update guest count" });
@@ -31,7 +33,7 @@ exports.updateGuestCount = async (req, res) => {
 exports.registerUser = async (req, res) => {
     try {
         const { eventId } = req.params;
-        const { name, email, phone, eventname,eventlocation,eventdate } = req.body;
+        const { name, email, eventname,eventlocation,eventdate } = req.body;
 
         // Check if the user already exists
         let attendee = await Attendee.findOne({ email });

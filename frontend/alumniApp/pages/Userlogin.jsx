@@ -12,7 +12,7 @@ const UserLogin = () => {
   const navigate = useNavigate()
   // Send OTP
   const sendOtp = async () => {
-    if (!email || !phoneNumber) {
+    if (!email) {
       setMessage("Email and Phone Number are required!");
       return;
     }
@@ -20,12 +20,10 @@ const UserLogin = () => {
       const response = await fetch(sentotpRoute, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, phoneNumber }),
+        body: JSON.stringify({ email}),
       });
       const data = await response.json();
       if (data.success) {
-        // setOtpSent(true);
-        // setMessage("OTP sent to your phone!");
         localStorage.setItem("userEmail", email);
         navigate(`/userpage`)
       } else {
@@ -36,30 +34,7 @@ const UserLogin = () => {
     }
   };
 
-  // Verify OTP
-  const verifyOtp = async () => {
-    if (!otp) {
-      setMessage("Please enter the OTP!");
-      return;
-    }
-    try {
-      const response = await fetch("/api/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, phoneNumber, otp }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        // setMessage("OTP verified successfully!");
-        // Redirect user or perform login
-
-      } else {
-        setMessage(data.message);
-      }
-    } catch (err) {
-      setMessage("Error verifying OTP. Please try again.");
-    }
-  };
+   
 
   return (
     <div className="user-login-container">
@@ -75,18 +50,6 @@ const UserLogin = () => {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="user-login-container__form-group">
-              <label className="user-login-container__label">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                className="user-login-container__input"
-                placeholder="Enter your phone number"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
               />
             </div>
             <button className="user-login-container__button" onClick={sendOtp}>
