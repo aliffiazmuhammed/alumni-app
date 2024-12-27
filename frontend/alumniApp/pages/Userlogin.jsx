@@ -38,7 +38,7 @@ const UserLogin = () => {
 
   return (
     <div className="user-login-container">
-      <h2 className="user-login-container__title">User Login</h2>
+      <h2 className="user-login-container__title">Attendee</h2>
       <div className="user-login-container__form">
         {!otpSent ? (
           <>

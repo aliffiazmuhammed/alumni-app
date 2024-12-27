@@ -12,7 +12,6 @@ function AdminLogin() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-        console.log("hello")
       const response = await axios.post(adminLoginRoute, { name, password });
       if (response.data.success) {
         navigate(`/admindashboard/${response.data.admin._id}`)

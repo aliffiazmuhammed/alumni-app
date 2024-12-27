@@ -147,11 +147,11 @@ const UserEvent = () => {
         {!isEditing ? (
           <>
             <p>
-              <strong>Morning Guest Count:</strong>{" "}
+              <strong>Morning Guest Count(including you):</strong>{" "}
               {userDetails.morningGuestCount}
             </p>
             <p>
-              <strong>Evening Guest Count:</strong>{" "}
+              <strong>Evening Guest Count(including you):</strong>{" "}
               {userDetails.eveningGuestCount}
             </p>
             <p>
@@ -164,7 +164,7 @@ const UserEvent = () => {
         ) : (
           <>
             <p>
-              <strong>Morning Guest Count:</strong>
+              <strong>Morning Guest Count(including you):</strong>
               <input
                 type="number"
                 value={userDetails.morningGuestCount}
@@ -177,7 +177,7 @@ const UserEvent = () => {
               />
             </p>
             <p>
-              <strong>Evening Guest Count:</strong>
+              <strong>Evening Guest Count(including you):</strong>
               <input
                 type="number"
                 value={userDetails.eveningGuestCount}
@@ -221,11 +221,9 @@ const UserEvent = () => {
             <button onClick={handleCheckIn}>Check In</button>
           )}
             */}
-        {
-          !userDetails.checkIn&&!checkinStatus&&(
-            <button onClick={handleCheckIn}>Check In</button>
-          )
-        }
+        {!userDetails.checkIn && !checkinStatus && (
+          <button onClick={handleCheckIn}>Check In</button>
+        )}
       </div>
       {message && <p className="message">{message}</p>}
     </div>

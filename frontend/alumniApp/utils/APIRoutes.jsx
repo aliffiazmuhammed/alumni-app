@@ -1,4 +1,4 @@
-export const host = 'http://localhost:5000';
+export const host = "http://3.107.192.100:443";
 
 
 export const excelUpload = `${host}/api/uploadExcel`; 
