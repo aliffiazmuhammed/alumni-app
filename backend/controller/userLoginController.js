@@ -16,7 +16,7 @@ exports.sendOtp = async (req, res) => {
         const attendee = await Attendee.findOne({ email });
         console.log(attendee)
         if (!attendee) {
-            return res.status(404).json({ success: false, message: "Attendee not found!" });
+            return res.status(404).json({ success: false, message: "Attendee not found!Contact Registration Desk" });
         }
 
         res.json({ success: true, message: "success", email:attendee.email });
