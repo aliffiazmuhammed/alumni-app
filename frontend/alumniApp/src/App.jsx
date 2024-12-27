@@ -13,7 +13,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/admin" element={<Admin />} />
-        <Route path="/adminlogin" element={<Adminlogin />} />
+        <Route path="/" element={<Adminlogin />} />
         <Route path="/userlogin" element={<Userlogin />} />
         <Route path="/admindashboard/:adminId" element={<AdminDashboard />} />
         <Route path="/eventdetails/:eventId" element={<EventDetails />} />
