@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     <footer style={styles.footer}>
       <p style={styles.text}>
-        Powered by <span style={styles.brand}>YLogX</span>
+        Powered by <span style={styles.brand}>YLogX Private Limited</span>
       </p>
     </footer>
   );
@@ -25,7 +25,6 @@ const styles = {
   },
   brand: {
     fontWeight: "bold",
-    color: "#007bff", // Brand color (blue)
   },
 };
 
