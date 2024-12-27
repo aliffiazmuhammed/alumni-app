@@ -1,4 +1,4 @@
-export const host = "http://3.107.192.100:443";
+export const host = "https://alumni-app-backend.vercel.app";
 
 
 export const excelUpload = `${host}/api/uploadExcel`; 
