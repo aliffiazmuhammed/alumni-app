@@ -3,14 +3,15 @@ frontend:
     phases:
         preBuild:
             commands:
+                - cd frontend/alumniApp
                 - npm install
         build:
             commands:
                 - npm run build
     artifacts:
-        baseDirectory: dist
+        baseDirectory: frontend/alumniApp/dist
         files:
             - '**/*'
     cache:
         paths:
-            - node_modules/**/*
+            - frontend/alumniApp/node_modules/**/*
