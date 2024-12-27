@@ -1,3 +1,18 @@
+.clicktocheckin {
+    font-size: 18px;
+    /* Make the font larger */
+    font-weight: bold;
+    /* Make the text bold */
+    text-align: center;
+    /* Align the text to the center */
+    margin-top: 15px;
+    /* Add spacing above the text */
+    color: #1e88e5;
+    /* Optional: Match the event title color or add a highlight */
+    cursor: pointer;
+    /* Add pointer cursor on hover for better UX */
+}
+
 .event-card {
     background: #ffffff;
     border: 1px solid #ddd;
@@ -6,6 +21,13 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease-in-out;
     text-align: left;
+    /* Default text alignment */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* Adjusts spacing in the card */
+    height: 100%;
+    /* Ensures the card maintains height for consistent alignment */
 }
 
 .event-card:hover {
