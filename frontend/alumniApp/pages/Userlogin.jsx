@@ -30,7 +30,7 @@ const UserLogin = () => {
         setMessage(data.message);
       }
     } catch (err) {
-      setMessage("Error sending OTP. Please try again.");
+      setMessage("Error loging in. Please try again.");
     }
   };
 

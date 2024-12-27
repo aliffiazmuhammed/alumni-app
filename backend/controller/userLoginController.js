@@ -22,6 +22,6 @@ exports.sendOtp = async (req, res) => {
         res.json({ success: true, message: "success", email:attendee.email });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: "Failed to send OTP!" });
+        res.status(500).json({ success: false, message: "Error loging in Try again!" });
     }
 };
