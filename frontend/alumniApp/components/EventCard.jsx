@@ -23,6 +23,7 @@ const EventCard = ({ event }) => {
         <strong>Location:</strong> {event.location}
       </p>
       <p>{event.description}</p>
+      <p>Click to Check in</p>
     </div>
   );
 };
