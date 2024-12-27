@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import '../css/userlogin.css';
 import { sentotpRoute } from "../utils/APIRoutes";
 import { useNavigate } from "react-router-dom";
-
+import Footer from "../components/Footer";
 const UserLogin = () => {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");

@@ -10,7 +10,7 @@ import {
   userupdateguestRoute,
   fetchUserDetailsRoute,
 } from "../utils/APIRoutes";
-
+import Footer from "../components/Footer";
 const UserEvent = () => {
   const { eventId } = useParams(); // Get the eventId from the URL
   const [eventDetails, setEventDetails] = useState(null);

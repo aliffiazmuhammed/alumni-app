@@ -13,7 +13,7 @@ import {
   checkinattendee,
   addattendee,
 } from "../utils/APIRoutes";
-
+import Footer from "../components/Footer";
 
 function EventDetails() {
   const { eventId } = useParams();

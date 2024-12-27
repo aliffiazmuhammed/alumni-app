@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Loader from "../components/Loader";
 import { userpageRoute } from "../utils/APIRoutes";
 import "../css/userpage.css";
-
+import Footer from "../components/Footer";
 const UserPage = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);

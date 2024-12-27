@@ -3,7 +3,7 @@ import axios from "axios";
 import "../css/adminlogin.css";
 import { adminLoginRoute } from "../utils/APIRoutes";
 import { useNavigate } from "react-router-dom";
-
+import Footer from "../components/Footer";
 function AdminLogin() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -27,35 +27,37 @@ function AdminLogin() {
 
   return (
     <div className="admin-login">
-    <div className="admin-login-container">
-      <h2>Admin Login</h2>
-      <form onSubmit={handleLogin} className="login-form">
-        <div className="form-group">
-          <label htmlFor="email">Name</label>
-          <input
-            type="text"
-            id="email"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your name"
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
-            required
-          />
-        </div>
-        <button type="submit" className="login-button">Login</button>
-        {message && <p className="login-message">{message}</p>}
-      </form>
-    </div>
+      <div className="admin-login-container">
+        <h2>Admin Login</h2>
+        <form onSubmit={handleLogin} className="login-form">
+          <div className="form-group">
+            <label htmlFor="email">Name</label>
+            <input
+              type="text"
+              id="email"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your name"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <button type="submit" className="login-button">
+            Login
+          </button>
+          {message && <p className="login-message">{message}</p>}
+        </form>
+      </div>
     </div>
   );
 }

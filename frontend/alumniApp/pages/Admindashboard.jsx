@@ -8,7 +8,7 @@ import {
   addeventRoute,
 } from "../utils/APIRoutes";
 import { useParams, useNavigate } from "react-router-dom";
-
+import Footer from "../components/Footer";
 const AdminDashboard = () => {
   const [events, setEvents] = useState([]);
   const [eventForm, setEventForm] = useState({
