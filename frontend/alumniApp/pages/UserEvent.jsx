@@ -27,7 +27,7 @@ const UserEvent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-
+  const [checkinStatus, setcheckinStatus] = useState(null); 
   // Fetch event details and registration status on load
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -50,6 +50,7 @@ const UserEvent = () => {
         setEventDetails(eventResponse.data.event);
         setRegistrationStatus(registrationResponse.data);
         setUserDetails(userResponse.data.user);
+        setcheckinStatus(userResponse.data.user.checkIn);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching event data:", error);
@@ -69,6 +70,7 @@ const UserEvent = () => {
       });
       setMessage(response.data.message);
       setRegistrationStatus({ ...registrationStatus, checkedIn: true });
+      setcheckinStatus(true)
     } catch (error) {
       console.error("Error during check-in:", error);
       setMessage("Failed to check in. Please try again.");
@@ -197,7 +199,6 @@ const UserEvent = () => {
               >
                 <option value="Vegetarian">Vegetarian</option>
                 <option value="Non-Vegetarian">Non-Vegetarian</option>
-                <option value="Vegan">Vegan</option>
               </select>
             </p>
             <button className="save-btn" onClick={handleGuestDetailsUpdate}>
@@ -208,17 +209,23 @@ const UserEvent = () => {
       </div>
 
       <div className="actions">
-        {/* Show Register button if not registered and before the event date */}
+        {/* Show Register button if not registered and before the event date 
         {currentDate < eventDate && !registrationStatus?.registered && (
           <button onClick={handleRegister}>Register</button>
         )}
-
-        {/* Show Check In button if registered but not checked in on event day */}
+          */}
+        {/* Show Check In button if registered but not checked in on event day 
         {currentDate.toDateString() === eventDate.toDateString() &&
           registrationStatus?.registered &&
           !registrationStatus?.checkedIn && (
             <button onClick={handleCheckIn}>Check In</button>
           )}
+            */}
+        {
+          !userDetails.checkIn&&!checkinStatus&&(
+            <button onClick={handleCheckIn}>Check In</button>
+          )
+        }
       </div>
       {message && <p className="message">{message}</p>}
     </div>

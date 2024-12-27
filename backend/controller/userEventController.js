@@ -74,17 +74,17 @@ exports.checkInUser = async (req, res) => {
         }
 
         // Find the registration entry
-        const registration = await Registered.findOne({
-            userId: attendee._id,
-            eventId,
-        });
-        if (!registration) {
-            return res.status(404).json({ message: "Registration not found" });
-        }
+        // const registration = await Registered.findOne({
+        //     userId: attendee._id,
+        //     eventId,
+        // });
+        // if (!registration) {
+        //     return res.status(404).json({ message: "Registration not found" });
+        // }
 
         // Update check-in status
-        registration.checkIn = true;
-        await registration.save();
+        attendee.checkIn = true;
+        await attendee.save();
 
         res.status(200).json({ message: "Check-in successful" });
     } catch (error) {

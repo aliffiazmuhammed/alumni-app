@@ -152,53 +152,51 @@ exports.deleteAttendee = async (req, res) => {
 exports.generatereport = async (req, res) => {
     const { eventId } = req.params;
     try {
-        // Fetch attendees for the event
+        // Fetch all attendees for the event
         const attendees = await Attendee.find({ eventId }).lean();
 
-        // Fetch registered attendees for the event
-        const registeredAttendees = await Registered.find({ eventId })
-            .populate("userId") // Populate details from the Attendee model
-            .lean();
+        // Fetch attendees who have checked in
+        const checkedInAttendees = attendees.filter(attendee => attendee.checkIn);
 
-        // Prepare attendees data for the Excel sheet
+        // Prepare data for the total attendees sheet
         const attendeesData = attendees.map((attendee) => ({
             Name: attendee.name,
             Email: attendee.email,
             MorningGuestCount: attendee.morningGuestCount,
             EveningGuestCount: attendee.eveningGuestCount,
-            PaymentAmount:attendee.paymentAmount,
-            Foodchoice:attendee.foodChoice,
+            PaymentAmount: attendee.paymentAmount,
+            FoodChoice: attendee.foodChoice,
             CreatedAt: attendee.createdAt.toLocaleString(),
         }));
 
-        // Prepare registered attendees data for the Excel sheet
-        const registeredData = registeredAttendees.map((registered) => ({
-            Name: registered.userId.name,
-            Email: registered.userId.email,
-            CheckInStatus: registered.checkIn ? "Checked In" : "Not Checked In",
+        // Prepare data for the checked-in attendees sheet
+        const checkedInData = checkedInAttendees.map((attendee) => ({
+            Name: attendee.name,
+            Email: attendee.email,
+            MorningGuestCount: attendee.morningGuestCount,
+            EveningGuestCount: attendee.eveningGuestCount,
+            CheckInStatus: "Checked In",
+            CreatedAt: attendee.createdAt.toLocaleString(),
         }));
 
-        // Create Excel sheets
+        // Create an Excel workbook
         const workbook = XLSX.utils.book_new();
 
-        // Add Attendees List sheet
+        // Add the total attendees sheet
         const attendeesSheet = XLSX.utils.json_to_sheet(attendeesData);
-        XLSX.utils.book_append_sheet(workbook, attendeesSheet, "Attendees List");
+        XLSX.utils.book_append_sheet(workbook, attendeesSheet, "Total Attendees");
 
-        // Add Registered Attendees List sheet
-        const registeredSheet = XLSX.utils.json_to_sheet(registeredData);
-        XLSX.utils.book_append_sheet(
-            workbook,
-            registeredSheet,
-            "Registered Attendees List"
-        );
+        // Add the checked-in attendees sheet
+        const checkedInSheet = XLSX.utils.json_to_sheet(checkedInData);
+        XLSX.utils.book_append_sheet(workbook, checkedInSheet, "Checked-In Attendees");
+
         // Ensure the "reports" directory exists
         const reportsDir = path.join(__dirname, "../reports");
         if (!fs.existsSync(reportsDir)) {
-            fs.mkdirSync(reportsDir, { recursive: true }); // Creates the directory recursively
+            fs.mkdirSync(reportsDir, { recursive: true });
         }
 
-        // Generate Excel file path
+        // Generate the Excel file path
         const filePath = path.join(
             __dirname,
             `../reports/Event_${eventId}_Report.xlsx`
@@ -220,7 +218,7 @@ exports.generatereport = async (req, res) => {
         console.error("Error generating report:", error);
         res.status(500).json({ message: "Failed to generate report" });
     }
-}
+};
 
 exports.sendReminderEmails = async (req, res) => {
     try {
@@ -284,3 +282,32 @@ exports.sendReminderEmails = async (req, res) => {
         res.status(500).json({ message: 'Failed to send reminder emails.', error });
     }
 };
+
+exports.addattendee = async (req, res) => {
+    try {
+        const attendee = new Attendee(req.body);
+        const savedAttendee = await attendee.save();
+        res.status(201).json(savedAttendee);
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({ message: "Failed to add attendee", error: err });
+    }
+}
+
+exports.checkin = async (req, res) => {
+    try {
+        console.log('hello')
+        const attendee = await Attendee.findByIdAndUpdate(
+            req.params.id,
+            { checkIn: true },
+            { new: true }
+        );
+        if (!attendee) {
+            return res.status(404).json({ message: "Attendee not found" });
+        }
+        res.json(attendee);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to check in attendee" });
+    }
+}

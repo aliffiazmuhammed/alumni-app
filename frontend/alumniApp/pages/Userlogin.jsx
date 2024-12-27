@@ -53,7 +53,7 @@ const UserLogin = () => {
               />
             </div>
             <button className="user-login-container__button" onClick={sendOtp}>
-              Login
+              Search
             </button>
           </>
         ) : (

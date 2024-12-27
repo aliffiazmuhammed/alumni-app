@@ -43,6 +43,7 @@ const attendeeSchema = new mongoose.Schema(
         eveningGuestCount: { type: Number, default: 0 }, // Evening guest count
         foodChoice: { type: String, default: '' }, // Food choice
         paymentAmount: { type: Number, default: 0 }, // Payment amount
+        checkIn: { type: Boolean, default: false },
         eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event', required: true }, // Event reference
     },
     { timestamps: true }

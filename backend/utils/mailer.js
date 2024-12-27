@@ -17,7 +17,7 @@ const sendRegistrationEmail = async (userEmail, userName, eventName,eventlocatio
     const mailOptions = {
         from: 'your_email@gmail.com',
         to: userEmail,
-        subject: `Reminder: Register for ${userEmail}`,
+        subject: `Registration confirmation mail`,
         html: `
             <h3>Hi ${userName},</h3>
            <p>Thank you for registering for the event: <strong>${eventName}</strong>.</p>

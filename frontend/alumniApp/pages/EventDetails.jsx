@@ -10,6 +10,8 @@ import {
   getsingleeventRoute,
   generatereportRoute,
   sendremaindermailsRoute,
+  checkinattendee,
+  addattendee,
 } from "../utils/APIRoutes";
 
 
@@ -22,17 +24,26 @@ function EventDetails() {
   const [editMode, setEditMode] = useState(false);
   const [editAttendee, setEditAttendee] = useState(null);
   const [eventDetails, setEventDetails] = useState({});
-
+const [showAddModal, setShowAddModal] = useState(false);
+const [newAttendee, setNewAttendee] = useState({
+  name: "",
+  email: "",
+  morningGuestCount: 0,
+  eveningGuestCount: 0,
+  foodChoice: "",
+  paymentAmount: 0,
+});
+const [eventstats, setEventStats] = useState({});
   // Fetch event details on page load
   useEffect(() => {
     const fetchEventDetails = async () => {
       const response = await fetch(`${getsingleeventRoute}/${eventId}`);
       const data = await response.json();
-      setEventDetails(data);
+      setEventDetails(data.event);
+      setEventStats(data.stats); // Assuming you add a state variable for stats
     };
     fetchEventDetails();
   }, [eventId]);
-
   const handleSearch = async (e) => {
     e.preventDefault();
     const response = await fetch(
@@ -145,6 +156,48 @@ const generateReport = async () => {
   }
 };
 
+const handleCheckIn = async (attendeeId) => {
+  console.log('hello')
+  const response = await fetch(`${checkinattendee}/${attendeeId}`, {
+    method: "PUT",
+  });
+
+  if (response.ok) {
+    alert("Attendee checked in successfully");
+    setSearchResult(
+      searchResult.map((attendee) =>
+        attendee._id === attendeeId ? { ...attendee, checkIn: true } : attendee
+      )
+    );
+  } else {
+    console.log('failed')
+    alert("Failed to check in attendee");
+  }
+};
+
+const handleAddAttendeeChange = (e) => {
+  const { name, value } = e.target;
+  setNewAttendee({ ...newAttendee, [name]: value });
+};
+
+const handleAddAttendee = async (e) => {
+  e.preventDefault();
+  const response = await fetch(addattendee, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...newAttendee, eventId }),
+  });
+
+  const data = await response.json();
+  if (response.ok) {
+    alert("Attendee added successfully!");
+    setSearchResult([...searchResult, data]); // Add the new attendee to the list
+    setShowAddModal(false);
+  } else {
+    alert(data.message || "Failed to add attendee");
+  }
+};
+
   const generateremaindermail = async()=>{
     try {
         const response = await fetch(sendremaindermailsRoute, {
@@ -174,14 +227,16 @@ const generateReport = async () => {
     <div className="event-details">
       <h2>{eventDetails.name}</h2>
       <p>
-        <strong>Date:</strong>{" "}
-        {new Date(eventDetails.date).toLocaleDateString()}
+        <strong>Total Checked In Attendees:</strong>
+        {eventstats.totalCheckedInAttendees}
       </p>
       <p>
-        <strong>Location:</strong> {eventDetails.location}
+        <strong>Total Morning Attendees:</strong>
+        {eventstats.totalMorningAttendees}
       </p>
       <p>
-        <strong>Description:</strong> {eventDetails.description}
+        <strong>Total Evening Attendees:</strong>
+        {eventstats.totalEveningAttendees}
       </p>
 
       {/* File Upload Section */}
@@ -206,9 +261,9 @@ const generateReport = async () => {
         </button>
       </div>
       {/*send remainder mails*/}
-      <div className="button-container">
+      <div className="report-generation">
         <button
-          className="send-reminder-button"
+          className="generate-report-button"
           onClick={generateremaindermail}
         >
           Send Reminder Mail
@@ -297,7 +352,73 @@ const generateReport = async () => {
           <button type="submit">Update</button>
         </form>
       )}
-
+      <button
+        className="add-attendee-button"
+        onClick={() => setShowAddModal(true)}
+      >
+        Add Attendee
+      </button>
+      {showAddModal && (
+        <div className="add-attendee-modal">
+          <h3>Add Attendee</h3>
+          <form onSubmit={handleAddAttendee}>
+            <label>Name:</label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Name"
+              value={newAttendee.name}
+              onChange={handleAddAttendeeChange}
+              required
+            />
+            <label>Email:</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={newAttendee.email}
+              onChange={handleAddAttendeeChange}
+              required
+            />
+            <label>Morning Guest Count:</label>
+            <input
+              type="number"
+              name="morningGuestCount"
+              placeholder="Morning Guest Count"
+              value={newAttendee.morningGuestCount}
+              onChange={handleAddAttendeeChange}
+            />
+            <label>Evening Guest Count:</label>
+            <input
+              type="number"
+              name="eveningGuestCount"
+              placeholder="Evening Guest Count"
+              value={newAttendee.eveningGuestCount}
+              onChange={handleAddAttendeeChange}
+            />
+            <label>Food Choice:</label>
+            <input
+              type="text"
+              name="foodChoice"
+              placeholder="Food Choice"
+              value={newAttendee.foodChoice}
+              onChange={handleAddAttendeeChange}
+            />
+            <label>Payment Amount:</label>
+            <input
+              type="number"
+              name="paymentAmount"
+              placeholder="Payment Amount"
+              value={newAttendee.paymentAmount}
+              onChange={handleAddAttendeeChange}
+            />
+            <button type="submit">Add</button>
+            <button type="button" onClick={() => setShowAddModal(false)}>
+              Cancel
+            </button>
+          </form>
+        </div>
+      )}
       {/* Search Results */}
       {searchResult && (
         <div className="search-results">
@@ -330,6 +451,15 @@ const generateReport = async () => {
                       >
                         Edit
                       </button>
+                      {!attendee.checkIn && (
+                        <button
+                          className="checkin-button"
+                          onClick={() => handleCheckIn(attendee._id)}
+                        >
+                          Check-In
+                        </button>
+                      )}
+
                       <button
                         className="delete-button"
                         onClick={() => handleDelete(attendee._id)}

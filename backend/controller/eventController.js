@@ -101,23 +101,49 @@ module.exports.deleteEvent = async (req, res) => {
 
 module.exports.getEventById = async (req, res) => {
     const { eventId } = req.params;
-    console.log(eventId)
+
     if (!eventId) {
-        return res.status(400).json({ message: "Event ID are required." });
+        return res.status(400).json({ message: "Event ID is required." });
     }
 
     try {
-        console.log("event")
-        const event = await Event.findOne({ _id: eventId});
+        // Fetch the event details
+        const event = await Event.findOne({ _id: eventId });
 
         if (!event) {
-            console.log("event not found")
-            return res.status(404).json({ message: "Event not found or unauthorized." });
+            return res.status(404).json({ message: "Event not found." });
         }
 
-        res.status(200).json(event);
+        // Fetch attendees for the event
+        const attendees = await Attendee.find({ eventId });
+
+        // Calculate totals
+        const totalMorningAttendees = attendees.reduce(
+            (sum, attendee) => sum + attendee.morningGuestCount,
+            0
+        );
+
+        const totalEveningAttendees = attendees.reduce(
+            (sum, attendee) => sum + attendee.eveningGuestCount,
+            0
+        );
+
+        const totalCheckedInAttendees = attendees.filter((attendee) => attendee.checkIn).length;
+
+        // Prepare response data
+        const eventData = {
+            event,
+            stats: {
+                totalMorningAttendees,
+                totalEveningAttendees,
+                totalCheckedInAttendees,
+            },
+        };
+
+        // Send response
+        res.status(200).json(eventData);
     } catch (error) {
+        console.error("Error fetching event details:", error);
         res.status(500).json({ message: "Failed to fetch event", error });
     }
 };
-
