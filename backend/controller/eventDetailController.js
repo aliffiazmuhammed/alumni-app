@@ -156,7 +156,7 @@ exports.generatereport = async (req, res) => {
         const attendees = await Attendee.find({ eventId }).lean();
 
         // Fetch attendees who have checked in
-        const checkedInAttendees = attendees.filter(attendee => attendee.checkIn);
+        const checkedInAttendees = attendees.filter((attendee) => attendee.checkIn);
 
         // Prepare data for the total attendees sheet
         const attendeesData = attendees.map((attendee) => ({
@@ -190,35 +190,21 @@ exports.generatereport = async (req, res) => {
         const checkedInSheet = XLSX.utils.json_to_sheet(checkedInData);
         XLSX.utils.book_append_sheet(workbook, checkedInSheet, "Checked-In Attendees");
 
-        // Ensure the "reports" directory exists
-        const reportsDir = path.join(__dirname, "../reports");
-        if (!fs.existsSync(reportsDir)) {
-            fs.mkdirSync(reportsDir, { recursive: true });
-        }
+        // Generate the Excel file in memory
+        const excelBuffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
 
-        // Generate the Excel file path
-        const filePath = path.join(
-            __dirname,
-            `../reports/Event_${eventId}_Report.xlsx`
-        );
-        XLSX.writeFile(workbook, filePath);
+        // Set headers for file download
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.setHeader("Content-Disposition", `attachment; filename=Event_${eventId}_Report.xlsx`);
 
-        // Send the file for download
-        res.download(filePath, (err) => {
-            if (err) {
-                console.error("Error downloading the file:", err);
-            }
-
-            // Delete the file after download
-            fs.unlink(filePath, (err) => {
-                if (err) console.error("Error deleting the file:", err);
-            });
-        });
+        // Send the file buffer to the client
+        res.send(excelBuffer);
     } catch (error) {
         console.error("Error generating report:", error);
         res.status(500).json({ message: "Failed to generate report" });
     }
 };
+
 
 exports.sendReminderEmails = async (req, res) => {
     try {
