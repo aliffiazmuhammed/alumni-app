@@ -11,7 +11,11 @@ const usereventroute = require('./Routes/usereventRoutes')
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 const app = express();
 app.use(bodyParser.json());
-app.use(cors())
+app.use(cors({
+    origin: 'http://127.0.0.1:5173',  // Allow local frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
 
 require("dotenv").config();
 
