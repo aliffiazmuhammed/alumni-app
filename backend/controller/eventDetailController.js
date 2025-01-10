@@ -27,9 +27,10 @@ exports.uploadExcel = async (req, res) => {
         // Normalize keys to match the schema
         const data = rawData.map((record) => ({
             name: record.Names || '',// Name field, if present
-            email: record.Attendees || '', // Email is in the 'Attendee' column
+            email: record.Email || '', // Email is in the 'Attendee' column
+            phone: record.Phone,
             morningGuestCount: parseInt(record['Morning Guest'] || '0', 10), // Morning guest count
-            eveningGuestCount: parseInt(record['Evening Guest not including self'] || '0', 10), // Evening guest count
+            eveningGuestCount: parseInt(record['Evening Guest'] || '0', 10), // Evening guest count
             foodChoice: record['Food choices'] || '', // Food choice
             paymentAmount: parseFloat(record['Payment Amount'] || '0'), // Payment amount
             eventId: eventId, // Associate with event
@@ -108,7 +109,7 @@ exports.searchAttendee = async (req, res) => {
 // Controller for editing an attendee
 exports.editAttendee = async (req, res) => {
     const { attendeeId } = req.params;
-    const { name, email, morningGuestCount,eveningGuestCount, paymentAmount ,foodChoice} = req.body;
+    const { name, email, phone, morningGuestCount, eveningGuestCount, paymentAmount, foodChoice } = req.body;
 
     try {
         const attendee = await Attendee.findById(attendeeId);
@@ -117,6 +118,7 @@ exports.editAttendee = async (req, res) => {
         }
 
         attendee.name = name || attendee.name;
+        attendee.phone = phone || attendee.phone;
         attendee.email = email || attendee.email;
         attendee.morningGuestCount = morningGuestCount || attendee.morningGuestCount;
         attendee.eveningGuestCount = eveningGuestCount || attendee.eveningGuestCount;
@@ -152,58 +154,76 @@ exports.deleteAttendee = async (req, res) => {
 exports.generatereport = async (req, res) => {
     const { eventId } = req.params;
     try {
-        // Fetch all attendees for the event
+        // Fetch attendees for the event
         const attendees = await Attendee.find({ eventId }).lean();
 
-        // Fetch attendees who have checked in
-        const checkedInAttendees = attendees.filter((attendee) => attendee.checkIn);
+        // Fetch registered attendees for the event
+        const registeredAttendees = await Registered.find({ eventId })
+            .populate("userId") // Populate details from the Attendee model
+            .lean();
 
-        // Prepare data for the total attendees sheet
+        // Prepare attendees data for the Excel sheet
         const attendeesData = attendees.map((attendee) => ({
             Name: attendee.name,
             Email: attendee.email,
+            Phone: attendee.phone,
             MorningGuestCount: attendee.morningGuestCount,
             EveningGuestCount: attendee.eveningGuestCount,
             PaymentAmount: attendee.paymentAmount,
-            FoodChoice: attendee.foodChoice,
+            Foodchoice: attendee.foodChoice,
             CreatedAt: attendee.createdAt.toLocaleString(),
         }));
 
-        // Prepare data for the checked-in attendees sheet
-        const checkedInData = checkedInAttendees.map((attendee) => ({
-            Name: attendee.name,
-            Email: attendee.email,
-            MorningGuestCount: attendee.morningGuestCount,
-            EveningGuestCount: attendee.eveningGuestCount,
-            CheckInStatus: "Checked In",
-            CreatedAt: attendee.createdAt.toLocaleString(),
+        // Prepare registered attendees data for the Excel sheet
+        const registeredData = registeredAttendees.map((registered) => ({
+            Name: registered.userId.name,
+            Email: registered.userId.email,
+            CheckInStatus: registered.checkIn ? "Checked In" : "Not Checked In",
         }));
 
-        // Create an Excel workbook
+        // Create Excel sheets
         const workbook = XLSX.utils.book_new();
 
-        // Add the total attendees sheet
+        // Add Attendees List sheet
         const attendeesSheet = XLSX.utils.json_to_sheet(attendeesData);
-        XLSX.utils.book_append_sheet(workbook, attendeesSheet, "Total Attendees");
+        XLSX.utils.book_append_sheet(workbook, attendeesSheet, "Attendees List");
 
-        // Add the checked-in attendees sheet
-        const checkedInSheet = XLSX.utils.json_to_sheet(checkedInData);
-        XLSX.utils.book_append_sheet(workbook, checkedInSheet, "Checked-In Attendees");
+        // Add Registered Attendees List sheet
+        const registeredSheet = XLSX.utils.json_to_sheet(registeredData);
+        XLSX.utils.book_append_sheet(
+            workbook,
+            registeredSheet,
+            "Registered Attendees List"
+        );
+        // Ensure the "reports" directory exists
+        const reportsDir = path.join(__dirname, "../reports");
+        if (!fs.existsSync(reportsDir)) {
+            fs.mkdirSync(reportsDir, { recursive: true }); // Creates the directory recursively
+        }
 
-        // Generate the Excel file in memory
-        const excelBuffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+        // Generate Excel file path
+        const filePath = path.join(
+            __dirname,
+            `../reports/Event_${eventId}_Report.xlsx`
+        );
+        XLSX.writeFile(workbook, filePath);
 
-        // Set headers for file download
-        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        res.setHeader("Content-Disposition", `attachment; filename=Event_${eventId}_Report.xlsx`);
+        // Send the file for download
+        res.download(filePath, (err) => {
+            if (err) {
+                console.error("Error downloading the file:", err);
+            }
 
-        // Send the file buffer to the client
-        res.send(excelBuffer);
+            // Delete the file after download
+            fs.unlink(filePath, (err) => {
+                if (err) console.error("Error deleting the file:", err);
+            });
+        });
     } catch (error) {
         console.error("Error generating report:", error);
         res.status(500).json({ message: "Failed to generate report" });
     }
-};
+}
 
 
 exports.sendReminderEmails = async (req, res) => {
@@ -280,20 +300,20 @@ exports.addattendee = async (req, res) => {
     }
 }
 
-exports.checkin = async (req, res) => {
-    try {
-        console.log('hello')
-        const attendee = await Attendee.findByIdAndUpdate(
-            req.params.id,
-            { checkIn: true },
-            { new: true }
-        );
-        if (!attendee) {
-            return res.status(404).json({ message: "Attendee not found" });
-        }
-        res.json(attendee);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Failed to check in attendee" });
-    }
-}
+// exports.checkin = async (req, res) => {
+//     try {
+//         console.log('hello')
+//         const attendee = await Attendee.findByIdAndUpdate(
+//             req.params.id,
+//             { checkIn: true },
+//             { new: true }
+//         );
+//         if (!attendee) {
+//             return res.status(404).json({ message: "Attendee not found" });
+//         }
+//         res.json(attendee);
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ message: "Failed to check in attendee" });
+//     }
+// }
