@@ -22,7 +22,7 @@ router.get('/generatereport/:eventId', generatereport);
 
 router.post('/sendremaindermails',sendReminderEmails)
 
-router.put("/checkin/:id",checkin)
+// router.put("/checkin/:id",checkin)
 
 router.post("/add",addattendee)
 
