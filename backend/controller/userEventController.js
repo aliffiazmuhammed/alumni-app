@@ -2,6 +2,8 @@ const Attendee = require("../model/attendeeModel");
 const Registered = require("../model/registerModel");
 const Event = require("../model/eventModel");
 const sendRegistrationEmail = require('../utils/mailer')
+const { google } = require("googleapis");
+const { PassThrough } = require("stream");
 // Update guest count for an attendee
 exports.updateGuestCount = async (req, res) => {
     try {
@@ -165,3 +167,64 @@ exports.fetchuserdetails = async (req, res) => {
         res.status(500).send("Failed to fetch user details.");
     }
 };
+
+const auth = new google.auth.GoogleAuth({
+    keyFile: "./qualified-gist-430418-v3-0692d409368d.json",
+    scopes: ["https://www.googleapis.com/auth/drive.file"],
+});
+
+// Convert Buffer to Stream
+const bufferToStream = (buffer) => {
+    const stream = new PassThrough();
+    stream.end(buffer);
+    return stream;
+};
+
+const uploadToDrive = async (fileBuffer, fileName, mimeType) => {
+    const drive = google.drive({ version: "v3", auth });
+
+    try {
+        const response = await drive.files.create({
+            requestBody: {
+                name: fileName,
+                parents: [process.env.DRIVE_FOLDER_ID],
+            },
+            media: {
+                mimeType: mimeType,
+                body: bufferToStream(fileBuffer),  // ✅ Fixed here
+            },
+            fields: "id",
+        });
+
+        // Make the file public
+        await drive.permissions.create({
+            fileId: response.data.id,
+            requestBody: {
+                role: "reader",
+                type: "anyone",
+            },
+        });
+
+        const fileUrl = `https://drive.google.com/uc?id=${response.data.id}`;
+        return fileUrl;
+    } catch (error) {
+        console.error("Error uploading to Google Drive:", error);
+        throw error;
+    }
+};
+
+
+exports.selfieupload = async (req, res) => {
+    const file = req.file;
+
+    if (!file) {
+        return res.status(400).json({ message: "No file uploaded." });
+    }
+
+    try {
+        const fileUrl = await uploadToDrive(file.buffer, file.originalname, file.mimetype);
+        res.status(200).json({ message: "Photo uploaded successfully!", fileUrl });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to upload photo." });
+    }
+}
