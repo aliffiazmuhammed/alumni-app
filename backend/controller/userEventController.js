@@ -7,18 +7,19 @@ const { PassThrough } = require("stream");
 // Update guest count for an attendee
 exports.updateGuestCount = async (req, res) => {
     try {
+        const { eventId } = req.params;
         const { email, morningGuestCount, eveningGuestCount, foodChoice } = req.body;
 
         // Find attendee by email
-        const attendee = await Attendee.findOne({ email });
+        const attendee = await Attendee.findOne({ email,eventId });
         if (!attendee) {
             return res.status(404).json({ message: "User not found" });
         }
 
         // Update guest count
-        attendee.morningGuestCount = morningGuestCount || attendee.morningGuestCount;
-        attendee.eveningGuestCount = eveningGuestCount || attendee.eveningGuestCount;
-        attendee.foodChoice = foodChoice || attendee.foodChoice;
+        attendee.morningGuestCount = morningGuestCount ?? attendee.morningGuestCount;
+        attendee.eveningGuestCount = eveningGuestCount ?? attendee.eveningGuestCount;
+        attendee.foodChoice = foodChoice ?? attendee.foodChoice;
         await attendee.save();
 
         res.status(200).json({ message: "Details updated successfully" });
