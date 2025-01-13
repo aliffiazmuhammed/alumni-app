@@ -227,24 +227,8 @@ exports.generatereport = async (req, res) => {
 
 
 exports.sendReminderEmails = async (req, res) => {
-    try {
-        const { eventId } = req.body;
-
-        // Fetch event details
-        const event = await Event.findById(eventId);
-        if (!event) {
-            return res.status(404).json({ message: 'Event not found' });
-        }
-
-        // Fetch attendees who have not registered yet
-        const attendees = await Attendee.find({ eventId });
-
-        if (attendees.length === 0) {
-            return res.status(200).json({ message: 'No attendees to send reminders to.' });
-        }
-
-        // Configure the Nodemailer transporter
-        const transporter = nodemailer.createTransport({
+    const { eventId, subject, content } = req.body;
+const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
             port: 587, // Common port for SMTP (can also be 465 for SSL)
             secure: false,
@@ -253,39 +237,37 @@ exports.sendReminderEmails = async (req, res) => {
                 pass: process.env.googlepas, // Your email password (use environment variables in production)
             },
         });
+    // Validate input
+    if (!eventId || !subject || !content) {
+        return res.status(400).json({ message: "Event ID, subject, and content are required." });
+    }
 
-        // Send reminder emails to each attendee
-        const emailPromises = attendees.map((attendee) => {
-            const mailOptions = {
-                from: 'your_email@gmail.com',
-                to: attendee.email,
-                subject: `Reminder: Register for ${event.name}`,
-                html: `
-                    <h3>Hi ${attendee.name},</h3>
-                    <p>You are invited to the event: <strong>${event.name}</strong>.</p>
-                    <p><strong>Event Details:</strong></p>
-                    <ul>
-                        <li><strong>Date:</strong> ${event.date}</li>
-                        <li><strong>Location:</strong> ${event.location}</li>
-                    </ul>
-                    <p>Please register for the event to confirm your participation.</p>
-                    <p>follow the following link to register:</p>
-                    <p>http://localhost:5173/userlogin</p>
-                    <p><strong>Note:</strong> If you have already registered, kindly ignore this email.</p>
-                    <p>Thank you!</p>
-                `,
-            };
+    try {
+        // Fetch attendees for the specific event
+        const attendees = await Attendee.find({ eventId }, "email");
 
-            return transporter.sendMail(mailOptions);
-        });
+        if (attendees.length === 0) {
+            return res.status(404).json({ message: "No attendees found for this event." });
+        }
 
-        // Wait for all emails to be sent
-        await Promise.all(emailPromises);
+        // Extract emails
+        const emailList = attendees.map(attendee => attendee.email);
 
-        res.status(200).json({ message: 'Reminder emails sent successfully!' });
+        // Email options
+        const mailOptions = {
+            from: process.env.email,
+            to: emailList,  // Send to all emails of the event
+            subject: subject,
+            text: content,
+        };
+
+        // Send the email
+        await transporter.sendMail(mailOptions);
+
+        res.status(200).json({ message: "Emails sent successfully to event attendees!" });
     } catch (error) {
-        console.error('Error sending reminder emails:', error);
-        res.status(500).json({ message: 'Failed to send reminder emails.', error });
+        console.error("Error sending emails:", error);
+        res.status(500).json({ message: "Failed to send emails. Please try again." });
     }
 };
 
