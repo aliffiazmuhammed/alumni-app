@@ -12,7 +12,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 const app = express();
 app.use(bodyParser.json());
 app.use(cors({
-    origin: 'http://127.0.0.1:5173',  // Allow local frontend
+    origin: '*',  // Allow local frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
